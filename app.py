@@ -1,4 +1,4 @@
-fromr os import environ
+from os import environ
 '''
 in this small project, i want to create a dynamic blog where the admin can create and delete posts
 the admin page will be restricted to only authenticated the user who can make,edit and delete posts
