@@ -129,6 +129,6 @@ def logout():
 	return redirect(url_for('index'))
 
 if __name__=='__main__':
-	app.run()
+	app.run(debug=True)
 
 	#https://obscure-wave-28106.herokuapp.com/
