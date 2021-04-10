@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>{%if title%}
+	<title>{{title}}-Myblog</title>
+{%else%}
+<title>-Myblog</title>
+{%endif%}
+<link rel="stylesheet" type="text/css" href="{{url_for('static',filename='bootstrap.css')}}">
+</head>
+<body>
+	{%if current_user.is_authenticated%}
+	<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+  <a class="navbar-brand" href="#">Bloggy</a>
+  <div class="collapse navbar-collapse" id="navbarCollapse">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="{{url_for('index')}}">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="{{url_for('account')}}">Account</a>
+      </li>
+      <li class="nav-item active">
+      	<a href="{{url_for('create_post')}}" class="nav-link">create post</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" href="{{url_for('logout')}}" tabindex="-1" aria-disabled="true">logout</a>
+      </li>
+    </ul>
+  </div>
+  <h3 class="nav-item " style="color: white;">
+  	Admin Page
+  </h3>
+</nav>
+{%else%}
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+  <a class="navbar-brand" href="#">Bloggy</a>
+  <div class="collapse navbar-collapse" id="navbarCollapse">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="{{url_for('index')}}">Home <span class="sr-only">(current)</span></a>
+      </li>
+    </ul>
+  </div>
+</nav>
+{%endif%}
+<div style="margin-top: 50px;">
+		{%with messages =get_flashed_messages()%}
+	{%if messages%}
+	   {%for m in messages%}
+	      <h4 class="alert alert-success">{{m}}</h4>
+	      {%endfor%}
+       {%endif%}
+	{%endwith%}
+</div>
+{%block body%}{%endblock%}
+</body>
+</html>

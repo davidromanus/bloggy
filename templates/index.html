@@ -1,0 +1,36 @@
+{%extends 'base.html'%}
+{%block body%}
+<!--this is the admin's side-->
+{%if current_user.is_authenticated%}
+<main role="main" class="container">
+<div class="container" style="margin:80px;">
+<div style="border:1px solid #ffffff">
+	<div class="jumbotron">
+		{%for post in posts%}
+	<h4><a href="#">{{post.sub_title}}</a><span class="p-2"><sub style="font-size: 10px;"> &nbsp;&nbsp;on {{post.posted}}</sub></span></h4>
+	<p>{{post.content}}</p>
+	</div>
+<hr>
+</div>
+</div>
+</main>
+{%endfor%}
+<!--this is the client's side-->
+{%else%}
+
+<main role="main" class="container">
+<div class="container" style="margin-top:80px;">
+<div style="border:1px solid #ffffff">
+	<div class="jumbotron">
+		{%for post in posts%}
+	<h4><a href="#">{{post.sub_title}}</a><span class="p-2"><sub style="font-size: 10px;"> &nbsp;&nbsp;on {{post.posted}}</sub></span></h4>
+	<p>{{post.content}}</p>
+	</div>
+<hr>
+</div>
+</div>
+{%endfor%}
+{%endif%}
+
+</div>
+{%endblock body%}

@@ -1,0 +1,13 @@
+{%extends 'base.html'%}
+{%block body%}
+<div class="container" style="margin-top: 80px;">
+	<h1 class="alert alert-success">this is the account page</h1>
+	<br>
+	{%for p in posts%}
+	<div class="article">
+		<h5>{{p.sub_title|capitalize}}<span><small>{{p.posted}}</small></span></h5>
+		<p>{{p.content}}</p>
+		<a href="{{url_for('edit_post',id=p.id)}}" class="btn btn-warning btn-md">Edit</a><span style="margin-left: 50px;"><a href="{{url_for('delete',id=p.id)}}" class="btn btn-danger btn-md">Delete</a></span>
+	</div>
+	{%endfor%}
+{%endblock body%}
