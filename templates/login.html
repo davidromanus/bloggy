@@ -1,14 +1,21 @@
 {%extends 'base.html'%}
 {%block body%}
-<div class="container" style="margin-top: 80px;">
-	<div class="form-group">
-		<h1>Login</h1>
+<div class="container">
+	<div class="col-lg-8 ms-auto me-auto mt-5 p-4 justify-content-md-center bg-white shadow-sm">
+		<h1 class="text-muted">Login</h1>
 		<form action="" method="POST">
 			{{form.hidden_tag()}}
-			{{form.email.label}}{{form.email(class="form-control")}}
-			{{form.password.label}}{{form.password(class="form-control")}}
-			{{form.submit(class="btn btn-outline-primary btn-lg")}}
+			<div class="form-field">
+				{{form.email.label}}{{form.email(class="form-control")}}
+			</div>
+			<div class="form-field">
+				{{form.password.label}}{{form.password(class="form-control")}}
+			</div>
+			<div class="form-field mt-2">
+				{{form.submit(class="btn btn-outline-dark btn-lg")}}
+			</div>
 		</form>
+		<p class="text-center text-muted"> ***forgot password ?***</p>
 	</div>
 </div>
 {%endblock body%}

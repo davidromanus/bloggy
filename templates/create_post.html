@@ -11,6 +11,9 @@
 			<br>
 			{{form.submit(class="btn btn-primary btn-md")}}
 	</form>
+	{{  ckeditor.load(pkg_type="full") }}
+	{{ ckeditor.config(name='recipe_info') }}
 	</div>
+
 </div>
 {%endblock body%}

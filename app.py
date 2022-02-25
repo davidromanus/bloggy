@@ -1,10 +1,4 @@
 from os import environ
-'''
-in this small project, i want to create a dynamic blog where the admin can create and delete posts
-the admin page will be restricted to only authenticated the user who can make,edit and delete posts
-this is just basic so i will put it in just one file or two maybe
-'''
-
 from flask import Flask,render_template,request,url_for,redirect,flash
 from flask_sqlalchemy import SQLAlchemy 
 from forms import LoginForm,EditPageForm,PostForm,EditPostForm
@@ -12,14 +6,15 @@ from datetime import datetime
 from flask_login import LoginManager,UserMixin,current_user,login_user,logout_user,login_required
 from werkzeug.security import generate_password_hash,check_password_hash
 from werkzeug.urls import url_parse
-from flask_bcrypt import Bcrypt 
+#from flask_bcrypt import Bcrypt 
+from flask_ckeditor import CKEditor
 
 app=Flask(__name__)
 login=LoginManager(app)
 login.login_view='login'
 app.config['SQLALCHEMY_DATABASE_URI']=environ.get('DATABASE_URL') or 'sqlite:///site.db'
 app.config['SECRET_KEY']='mysecret'
-bc=Bcrypt(app)
+ckeditor=CKEditor(app)
 db=SQLAlchemy(app)
 
 @login.user_loader
@@ -30,7 +25,18 @@ class User(db.Model,UserMixin):
 	id=db.Column(db.Integer,primary_key=True)
 	email=db.Column(db.String(120),index=True,unique=True)
 	ps_hsh=db.Column(db.String(140))
+	about=db.Column(db.String)
 	posts=db.relationship('Post',backref='author',lazy='dynamic')
+
+
+	def set_password(self,password):
+		self.ps_hsh = generate_password_hash(password)
+
+	def check_password(self,password):
+		return check_password_hash(self.ps_hsh, password)
+
+
+
 
 
 class Post(db.Model):
@@ -42,12 +48,6 @@ class Post(db.Model):
 
 	def __repr__(self):
 		return f'Post("{self.sub_title}","{self.content}","{self.pub_date}")'
-
-class PageInfo(db.Model):
-	id=db.Column(db.Integer,primary_key=True)
-	name=db.String(db.String(60))
-	desc=db.Column(db.String)
-
 
 #the routes
 @app.route('/')
@@ -62,10 +62,11 @@ def login():
 	form=LoginForm()
 	if form.validate_on_submit():
 		user=User.query.filter_by(email=form.email.data).first()
-		if user:
-		    login_user(user)
-		    flash('Welcome, David the handsome one','success')
-		    return redirect(url_for('account'))
+		if user is None or not user.check_password(form.password.data):
+		    flash('invalid username or password!','danger')
+		    return redirect(url_for('login'))
+		login_user(user)
+		return redirect(url_for('account'))
 		next_page=request.args.get('next')
 		if not next_page or url_parse(next_page).netloc !='':
 			next_page=url_for('index')
@@ -116,11 +117,10 @@ def edit_post(id):
 		form.content.data=task_to_edit.content
 	return render_template('edit_post.html',form=form)
 
-'''@app.route('/view-full-post/<int:id>')
-@login_required
-def view_full_post(id):
-	selected=Post.query.get_or_404(id)
-	return render_template('view-post-page.html',selected=selected)'''
+@app.route('/the_full_gist/<int:id>')
+def full_post(id):
+	post=Post.query.get_or_404(id)
+	return render_template('article.html',post=post)
 
 @app.route('/logout')
 @login_required
@@ -130,5 +130,3 @@ def logout():
 
 if __name__=='__main__':
 	app.run(debug=True)
-
-	#https://obscure-wave-28106.herokuapp.com/

@@ -1,13 +1,80 @@
 {%extends 'base.html'%}
 {%block body%}
-<div class="container" style="margin-top: 80px;">
-	<h1 class="alert alert-success">this is the account page</h1>
-	<br>
-	{%for p in posts%}
-	<div class="article">
-		<h5>{{p.sub_title|capitalize}}<span><small>{{p.posted}}</small></span></h5>
-		<p>{{p.content}}</p>
-		<a href="{{url_for('edit_post',id=p.id)}}" class="btn btn-warning btn-md">Edit</a><span style="margin-left: 50px;"><a href="{{url_for('delete',id=p.id)}}" class="btn btn-danger btn-md">Delete</a></span>
-	</div>
-	{%endfor%}
+	
+	 <nav class="navbar navbar-expand-md navbar-light bg-light" aria-label="Fourth navbar example">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">PANTH<strong style="color:red;">ER</strong></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample04" aria-controls="navbarsExample04" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarsExample04">
+        <ul class="navbar-nav ms-auto mb-2 mb-md-0">
+          <li class="nav-item">
+            <a class="nav-link active" href="{{ url_for('create_post') }}">
+             Add Article
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">
+              
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-facebook" viewBox="0 0 16 16">
+              <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z"/>
+            </svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+
+<section class="container-fluid">
+  <div class="p-4 p-md-5 mb-4  rounded">
+    <div class="col-md-6 px-0">
+      <h1 class="display-4 fst-italic">Hello David,</h1>
+      <p class="lead my-3">This is your sweet admin panel where you can perform all CRUD tasks for your blog site. Have fun!!!</p>
+      <a href="{{ url_for('logout') }}" class="btn btn-outline-dark btn-lg">Logout</a>
+    </div>
+  </div>
+</section>
+
+<main class="container">
+
+   <div class="row g-5">
+    <div class="col-md-8">
+      <h3 class="pb-4 mb-4 fst-italic border-bottom">
+        Your Recent Posts
+      </h3>
+
+      {%for post in posts%}
+      <article class="blog-post p-3 mt-2 shadow-sm" style="background:white;">
+        <h2 class="blog-post-title"><a href="{{ url_for('full_post',id=post.id) }}" style="text-decoration:none;">{{post.sub_title}}</a></h2>
+        <p class="blog-post-meta text-muted">{{post.posted.strftime("%b %d, %Y")}}</p>
+         <nav class="blog-pagination mt-2" aria-label="Pagination">
+	        <a class="btn btn-outline-secondary btn-sm" href="{{url_for('edit_post',id=post.id)}}">Edit</a>
+	        <a class="btn btn-danger btn-sm" href="{{url_for('delete',id=post.id)}}">Delete</a>
+	      </nav>
+      </article>
+      {%endfor%}
+
+
+      <nav class="blog-pagination mt-2" aria-label="Pagination">
+        <a class="btn btn-outline-dark" href="#">Older</a>
+        <a class="btn btn-outline-secondary disabled" href="#" tabindex="-1" aria-disabled="true">Newer</a>
+      </nav>
+    </div>
+  </div>
+
+
+</main>
+
+<footer class="blog-footer p-1 mt-3" style="background:white;">
+  <p class="text-center">&copy; Panther Group 2022. </p>
+</footer>
+
 {%endblock body%}
