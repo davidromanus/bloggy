@@ -8,14 +8,21 @@ from werkzeug.security import generate_password_hash,check_password_hash
 from werkzeug.urls import url_parse
 #from flask_bcrypt import Bcrypt 
 from flask_ckeditor import CKEditor
+import os
+import secrets
+from PIL import Image
+from flask_migrate import Migrate
+from config import Config
+
+
 
 app=Flask(__name__)
+app.config.from_object(Config)
 login=LoginManager(app)
 login.login_view='login'
-app.config['SQLALCHEMY_DATABASE_URI']=environ.get('DATABASE_URL') or 'sqlite:///site.db'
-app.config['SECRET_KEY']='mysecret'
 ckeditor=CKEditor(app)
 db=SQLAlchemy(app)
+migrate = Migrate(app,db)
 
 @login.user_loader
 def load_user(id):
@@ -41,6 +48,7 @@ class User(db.Model,UserMixin):
 
 class Post(db.Model):
 	id=db.Column(db.Integer,primary_key=True)
+	picture=db.Column(db.String(20),nullable=False)
 	sub_title=db.Column(db.String)
 	content=db.Column(db.String)
 	posted=db.Column(db.DateTime,default=datetime.utcnow)
@@ -48,6 +56,25 @@ class Post(db.Model):
 
 	def __repr__(self):
 		return f'Post("{self.sub_title}","{self.content}","{self.pub_date}")'
+
+
+
+#save picture function
+def save_picture(form_picture):
+	random_hex=secrets.token_hex(8)
+	_,f_ext=os.path.splitext(form_picture.filename)
+	picture_fn=random_hex + f_ext
+	picture_path=os.path.join(app.root_path,'static/blog_pics',picture_fn)
+
+	output_size=(250,250)
+	i=Image.open(form_picture)
+	i.thumbnail(output_size)
+
+
+	i.save(picture_path)
+
+	return picture_fn
+
 
 #the routes
 @app.route('/')
@@ -84,7 +111,8 @@ def account():
 def create_post():
 	form=PostForm()
 	if form.validate_on_submit():
-		post=Post(sub_title=form.sub_title.data,content=form.content.data)
+		pic=save_picture(form.picture.data)
+		post=Post(sub_title=form.sub_title.data,content=form.content.data,picture=pic)
 		db.session.add(post)
 		db.session.commit()
 		flash('posted','success')
@@ -106,13 +134,18 @@ def edit_post(id):
 	form=EditPostForm()
 	task_to_edit=Post.query.get_or_404(id)
 
-	if request.method=='POST':
+	if form.validate_on_submit():
+		if form.picture.data:
+			pic=save_picture(form.picture.data)
+			post.task_to_edit.picture=pic 
 		task_to_edit.sub_title=form.sub_title.data
 		task_to_edit.content=form.content.data
 		db.session.commit()
 		flash('updated successfully','success')
-		return redirect(url_for('account',sub_title=task_to_edit.sub_title,content=task_to_edit.content))
+		return redirect(url_for('account',sub_title=task_to_edit.sub_title,
+			content=task_to_edit.content,picture=task_to_edit.picture))
 	elif request.method=='GET':
+		form.picture.data=task_to_edit.picture
 		form.sub_title.data=task_to_edit.sub_title
 		form.content.data=task_to_edit.content
 	return render_template('edit_post.html',form=form)
